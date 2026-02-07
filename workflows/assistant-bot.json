@@ -1,0 +1,1307 @@
+{
+  "name": "АССИСТЕНТ БОТ",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {
+          "download": true
+        }
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1424,
+        64
+      ],
+      "id": "4c5cb2f9-67f8-4e44-a045-7756e8d603c2",
+      "name": "Telegram Trigger1",
+      "webhookId": "1ef4f876-19de-41ff-aa92-0f375ee0c22e",
+      "credentials": {
+        "telegramApi": {
+          "id": "MzvKODrt2OpmJpUp",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dd941c2a-20fd-4e04-98af-5f8d0633f218",
+              "name": "response_text",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        144,
+        592
+      ],
+      "id": "b0d710a3-72ab-4d7e-b54d-f16cc43509f1",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Telegram Trigger1').item.json.message.voice }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    },
+                    "id": "df12161b-88ff-4ca5-97fa-d4657c1f9150"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "75bbbee5-52a6-4ec2-a519-0ac62c86c4c8",
+                    "leftValue": "={{ $('Telegram Trigger1').item.json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "19eb3b65-0e3d-4b6f-b07e-697ae5df2104",
+                    "leftValue": "={{ $('Telegram Trigger1').item.json.message.document }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "={{ true }}",
+              "outputKey": "Файлы"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        576
+      ],
+      "id": "3a3dc317-5d31-4e5f-8b56-26ef436e1578",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger1').item.json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        304,
+        368
+      ],
+      "id": "b0e4ff5b-847d-4d63-9fd7-866b16421312",
+      "name": "Get a file1",
+      "webhookId": "d292913f-37bb-48f5-939f-8577457e4864",
+      "credentials": {
+        "telegramApi": {
+          "id": "MzvKODrt2OpmJpUp",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "59afcfc4-dec1-4f91-a786-f85b97ab6f92",
+              "name": "text",
+              "value": "={{ $('Telegram Trigger1').item.json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        912,
+        592
+      ],
+      "id": "227d5d07-c020-450e-9db7-a55039c6119c",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Telegram Trigger1').item.json.message.text }} {{ $json.text }}",
+        "options": {
+          "systemMessage": "=Привет, ты - мой ассистент.\nТвоя задача - помогать мне планировать, организовывать и координировать все события, встречи, задачи и напоминания в моём Google Календаре, а также отвечать на любые другие вопросы с помощью нейросетей.\n\nОбщие правила работы\nВсегда учитывай, что сегодняшняя дата - {{ $now }}\nИ все мои указания по времени и дате даны в часовом поясе UTC+3.\n\n* Доступные инструменты (modules)\nGet Events (getAll: event)\n- используй, когда я прошу показать список событий в моём календаре.\nCreate Event (create: event)\n- используй, когда я прошу создать новое событие.\nUpdate Event (update: event)\n- используй, когда я прошу обновить существующее событие.\nDelete Event (delete: event)\n- используй, когда я прошу удалить событие.\nСкажи мне (дай ответ на вопрос)\n- используй, когда в запросе нет упоминания мероприятий или событий, то есть всегда, кроме вышеперечисленных команд.\nВсегда подтверждай действие перед его выполнением, если параметры события не до конца ясны.\n- скачай (upload) и проанализируй документ {{ $json.id }} (если тебе отправляют какой либо файл) - используй всегда, когда тебе присылают какой-либо файл и просят с ним что-то сделать.\n- Перейди по ссылке и проанализируй страницу, если тебе отправляют какие-либо ссылки.\n\nПосле выполнения действия прикрепляй ссылку на событие, которос было создано, обновлено или удалено. Если я не давал команд, связанных с событиями или мероприятиями, не прикрепляй ссылок.\n\nОтвечай кратко, вежливо и по делу, как профессиональный ассистент."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1616,
+        592
+      ],
+      "id": "793f1de5-cdf6-4b2b-b2cd-f630130709d3",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger1').item.json.message.from.id }}",
+        "contextWindowLength": 100
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1792,
+        416
+      ],
+      "id": "c16e0f6c-3ddf-4eea-9aba-addb7a66e741",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "r2754445@gmail.com",
+          "mode": "list",
+          "cachedResultName": "r2754445@gmail.com"
+        },
+        "start": "={{ $fromAI(\"eventStart\") }}",
+        "end": "={{ $fromAI(\"eventEnd\") }}",
+        "additionalFields": {
+          "summary": "={{ $fromAI(\"name\") }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1760,
+        1008
+      ],
+      "id": "fb74cc0f-3660-42b3-873b-14dc6d5557d0",
+      "name": "Create an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "DGypPquYMLow2l44",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger1').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}{{ $json.data[0].content[0].text.value }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2816,
+        592
+      ],
+      "id": "ba50081b-10af-408c-95ba-bdc5b3971c44",
+      "name": "Send a text message1",
+      "webhookId": "ec4d9b11-dec2-498a-8b67-3979273a65a3",
+      "credentials": {
+        "telegramApi": {
+          "id": "MzvKODrt2OpmJpUp",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.2",
+          "mode": "list",
+          "cachedResultName": "gpt-5.2"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1632,
+        416
+      ],
+      "id": "89f0e713-1768-4af0-9922-de8b0d904aa7",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "BBRQaZuz2NatsfX4",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        704,
+        368
+      ],
+      "id": "9b79b66d-1387-4831-ac48-8ea1400ff0a8",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "openAiApi": {
+          "id": "BBRQaZuz2NatsfX4",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "r2754445@gmail.com",
+          "mode": "list",
+          "cachedResultName": "r2754445@gmail.com"
+        },
+        "eventId": "={{ $fromAI(\"eventID\", \"ID, которое мы получаем в инструменте get events\") }}",
+        "updateFields": {
+          "end": "={{ $fromAI(\"endTime\") }}",
+          "start": "={{ $fromAI(\"startTime\") }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        2080,
+        1008
+      ],
+      "id": "f845534d-35b6-4018-b0b2-46fb09d0be58",
+      "name": "Update an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "DGypPquYMLow2l44",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "r2754445@gmail.com",
+          "mode": "list",
+          "cachedResultName": "r2754445@gmail.com"
+        },
+        "returnAll": true,
+        "timeMin": "={{ $fromAI(\"dayBefore\", \"the day before the date the user requested\") }}",
+        "timeMax": "={{ $fromAI(\"dayAfter\", \"the day after the date the user requested\") }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1920,
+        1008
+      ],
+      "id": "4322d038-f6c3-4def-9531-da0756a202dd",
+      "name": "Get many events in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "DGypPquYMLow2l44",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "r2754445@gmail.com",
+          "mode": "list",
+          "cachedResultName": "r2754445@gmail.com"
+        },
+        "eventId": "={{ $fromAI(\"eventID\", \"ID, которое мы получаем в инструменте get events\") }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        2240,
+        1008
+      ],
+      "id": "31ab4624-c5a8-4fd4-90d4-70ac763a9d97",
+      "name": "Delete an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "DGypPquYMLow2l44",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger1').item.json.message.document.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        1424
+      ],
+      "id": "7e725b83-1e34-4ae5-8be3-173b1d692f8e",
+      "name": "Get a file",
+      "webhookId": "103cd274-3221-4d89-836f-be10991b30f2",
+      "credentials": {
+        "telegramApi": {
+          "id": "MzvKODrt2OpmJpUp",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Telegram Trigger1').item.json.message.voice }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    },
+                    "id": "df12161b-88ff-4ca5-97fa-d4657c1f9150"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "75bbbee5-52a6-4ec2-a519-0ac62c86c4c8",
+                    "leftValue": "={{ $('Telegram Trigger1').item.json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "19eb3b65-0e3d-4b6f-b07e-697ae5df2104",
+                    "leftValue": "={{ $('Telegram Trigger1').item.json.message.document }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "={{ true }}",
+              "outputKey": "Файлы"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a128030a-9797-407e-8900-930633be9fae",
+                    "leftValue": "",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -320,
+        576
+      ],
+      "id": "f7da55f7-c053-493c-9487-4722e9bd9832",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/assistants",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer [скрыто]"
+            },
+            {
+              "name": "OpenAI-Beta",
+              "value": "assistants=v2"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"model\": \"gpt-4o\",\n  \"name\": \"Buchgalter Extractor\",\n  \"instructions\": \"Выполни запрос пользователя и поработай с текстом: Перескажи, выдели главные мысли. Если будут дополнительные указания, выполни их в точности по запросу пользователя.\",\n  \"tools\": [{\"type\": \"file_search\"}]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        944,
+        1440
+      ],
+      "id": "6eeee99c-4ff7-4d5e-a262-77e5c9ae7f21",
+      "name": "Create Assistant"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/threads",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer [скрыто]"
+            },
+            {
+              "name": "OpenAI-Beta",
+              "value": "assistants=v2"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Проанализируй этот файл.\",\n      \"attachments\": [\n        {\n          \"file_id\": \"{{ $('HTTP Request5').item.json.id }}\",\n          \"tools\": [{\"type\": \"file_search\"}]\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1104,
+        1440
+      ],
+      "id": "7f82e937-5ee6-4b10-8136-b6dac2b7e717",
+      "name": "Create Thread"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ \"https://api.openai.com/v1/threads/\" + $node[\"Create Thread\"].json[\"id\"] + \"/runs\" }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer [скрыто]"
+            },
+            {
+              "name": "OpenAI-Beta",
+              "value": "assistants=v2"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"assistant_id\": \"{{ $('Create Assistant').item.json.id }}\"\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1312,
+        1440
+      ],
+      "id": "3db8f288-9f04-41e2-b307-c2e7b15fad09",
+      "name": "Create Run"
+    },
+    {
+      "parameters": {
+        "url": "={{ \"https://api.openai.com/v1/threads/\" + $node[\"Create Thread\"].json[\"id\"] + \"/runs/\" + $node[\"Create Run\"].json[\"id\"] }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer [скрыто]"
+            },
+            {
+              "name": "OpenAI-Beta",
+              "value": "assistants=v2"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1712,
+        1440
+      ],
+      "id": "d4cda27c-718b-42d6-a1f8-d3215fce30db",
+      "name": "Get Run Status"
+    },
+    {
+      "parameters": {
+        "url": "={{ \"https://api.openai.com/v1/threads/\" + $node[\"Create Thread\"].json[\"id\"] + \"/messages\" }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer [скрыто]"
+            },
+            {
+              "name": "OpenAI-Beta",
+              "value": "assistants=v2"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2112,
+        1440
+      ],
+      "id": "bedfb775-be81-41b3-8f3d-10478b907b4e",
+      "name": "Get Messages"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/files",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer [скрыто]"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "purpose",
+              "value": "assistants"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        784,
+        1440
+      ],
+      "id": "4b1ed740-3acc-4709-b8a8-535539b1ed86",
+      "name": "HTTP Request5"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1504,
+        1440
+      ],
+      "id": "5838f2ae-da14-4298-bd82-68fd3b6d3079",
+      "name": "Wait1",
+      "webhookId": "04bcfd7b-623c-4a3b-95cc-efb5a4940eb7"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "completed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "4c520ac9-d88a-45a9-bc6d-479d697287ae"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "completed"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "cadc6ae2-abda-4e15-9830-4469f348f379",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "in_progress",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "in_progress"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1904,
+        1440
+      ],
+      "id": "a20bb1ed-bb80-4d66-a379-76818c72675f",
+      "name": "Switch3"
+    },
+    {
+      "parameters": {
+        "content": "ЭТА ЧАСТЬ ОТВЕЧАЕТ ЗА РАСПОЗНАВАНИЕ И АНАЛИЗ ДОКУМЕНТОВ\n",
+        "height": 464,
+        "width": 2976,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -272,
+        1232
+      ],
+      "typeVersion": 1,
+      "id": "cf6e83bd-d05b-425d-9127-0cb9b3b737d6",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "ОТВЕЧАЕТ ЗА ТРАНСКРИБЦИЮ ГОЛОСОВЫХ В ТЕКСТ",
+        "height": 288,
+        "width": 1056
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        48,
+        272
+      ],
+      "id": "5c84713d-2103-4b93-83de-ff4f9dafa08e",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "ФУНКЦИИ КАЛЕНДАРЯ\n",
+        "height": 272,
+        "width": 864,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        912
+      ],
+      "id": "2df016a2-377f-4559-9983-d945038cecc8",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "{\n  \"text\": \"{{ JSON.stringify($json.message.content).replace(/(^\\\"|\\\"$)/g, '') }}\"\n}\n"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1360,
+        -1632
+      ],
+      "id": "d8792f68-a951-4ebb-ab1c-b58a174cce03",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/responses",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer [скрыто]"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({\n  model: \"gpt-5\",\n  reasoning: { effort: \"low\" },\n  tools: [{ type: \"web_search\" }],\n  tool_choice: \"auto\",\n  include: [\"web_search_call.action.sources\"],\n  input: `Проанализируй веб-страницу по ссылке: ${$json.url}\n\nОбязательно используй web_search, чтобы открыть страницу и собрать актуальные сведения из интернета. Если по прямой ссылке контент недоступен, найди зеркало/копию или надёжные источники о содержимом страницы.\n\nОтвет на русском, структура:\n1) О чём страница (1–2 предложения)\n2) Ключевые факты (пункты)\n3) Кому и чем полезно\n4) Риски/подводные камни (если есть)\n5) Краткое резюме (до 5 предложений)\n\nТребования:\n- Не выдумывай факты. Если данных нет — так и скажи.\n- Дай понятный ответ “для обычного человека”.\n- Старайся использовать цитирования/ссылки на источники там, где уместно.`\n}) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "e805ad8b-ca26-4ff6-a57c-9961bb8b24b9",
+      "name": "OpenAI Responses (web_search)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2032,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const resp = items[0].json;\n\n// 1) Основной текст ответа\nlet text = resp.output_text;\nif (!text && Array.isArray(resp.output)) {\n  const msg = resp.output.find(x => x.type === 'message');\n  if (msg?.content?.length) {\n    text = msg.content\n      .filter(p => p.type === 'output_text' || p.type === 'text')\n      .map(p => p.text || '')\n      .join('')\n      .trim();\n  }\n}\ntext = (text || '').trim();\nif (!text) text = 'Не удалось получить текст ответа от модели.';\n\n// 2) Цитаты из annotations (url_citation)\nlet citations = [];\nif (Array.isArray(resp.output)) {\n  const msg = resp.output.find(x => x.type === 'message');\n  const part = msg?.content?.find(p => p.type === 'output_text' || p.type === 'text');\n  const ann = part?.annotations || [];\n  citations = ann\n    .filter(a => a.type === 'url_citation' && a.url)\n    .map(a => ({ title: a.title || a.url, url: a.url }));\n}\n\n// 3) Полный список sources (если include включён)\nlet sources = [];\nif (Array.isArray(resp.output)) {\n  const ws = resp.output.find(x => x.type === 'web_search_call');\n  const s = ws?.action?.sources;\n  if (Array.isArray(s)) {\n    sources = s\n      .filter(x => x?.url)\n      .map(x => ({ title: x.title || x.url, url: x.url }));\n  }\n}\n\n// 4) Дедуп источников\nconst all = [...citations, ...sources];\nconst seen = new Set();\nconst uniq = [];\nfor (const it of all) {\n  const u = it.url;\n  if (!u || seen.has(u)) continue;\n  seen.add(u);\n  uniq.push(it);\n}\n\n// 5) Под лимит Telegram\nconst maxLen = 3300;\nlet out = text;\nif (out.length > maxLen) out = out.slice(0, maxLen) + '\\n\\n…(обрезано)';\n\nlet sourcesBlock = '';\nif (uniq.length) {\n  sourcesBlock = '\\n\\n*Источники:*\\n' + uniq.slice(0, 8).map((s, i) => `${i+1}. ${s.title}\\n${s.url}`).join('\\n');\n}\n\nreturn [{ json: { analysis: out + sourcesBlock } }];\n"
+      },
+      "id": "cc4db56b-2ff2-4088-a87c-8551bc87d769",
+      "name": "Format Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2272,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const message = items[0].json.message;\nlet url = (message.text || '').trim();\n\n// Достаём URL из entities (если Telegram распознал ссылку)\nif (message.entities && Array.isArray(message.entities)) {\n  const ent = message.entities.find(e => e.type === 'url' || e.type === 'text_link');\n  if (ent) {\n    if (ent.type === 'text_link' && ent.url) {\n      url = ent.url;\n    } else {\n      url = (message.text || '').substring(ent.offset, ent.offset + ent.length);\n    }\n  }\n}\n\nurl = (url || '').trim();\nif (!url) throw new Error('Пришли ссылку (URL) в сообщении.');\nif (!url.startsWith('http://') && !url.startsWith('https://')) {\n  throw new Error('Это не валидная ссылка. Пришли URL, который начинается с http:// или https://');\n}\n\nreturn [{ json: { url, chatId: message.chat.id } }];\n"
+      },
+      "id": "cb5e3f00-6e49-402a-8285-e6764b1e0591",
+      "name": "Extract URL1",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1792,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger1').item.json.message.from.id }}",
+        "text": "={{ $json.analysis }}",
+        "additionalFields": {}
+      },
+      "id": "64b490b8-fe74-4a58-8adb-02f3bed3290f",
+      "name": "Send to Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        2576,
+        48
+      ],
+      "webhookId": "e94413fe-d495-4705-a495-fe7bd700c741",
+      "credentials": {
+        "telegramApi": {
+          "id": "MzvKODrt2OpmJpUp",
+          "name": "Telegram account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract URL1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Get a file1": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Get a file1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Create Assistant": {
+      "main": [
+        [
+          {
+            "node": "Create Thread",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Thread": {
+      "main": [
+        [
+          {
+            "node": "Create Run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Run": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Run Status": {
+      "main": [
+        [
+          {
+            "node": "Switch3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Messages": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "Create Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Get Run Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch3": {
+      "main": [
+        [
+          {
+            "node": "Get Messages",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Responses (web_search)": {
+      "main": [
+        [
+          {
+            "node": "Format Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Output": {
+      "main": [
+        [
+          {
+            "node": "Send to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract URL1": {
+      "main": [
+        [
+          {
+            "node": "OpenAI Responses (web_search)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b32c9714-8913-49a0-aed2-ba698525b8ba",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e3a0c0af2ed37cd599d6a73fe80407b580a5a35904a20f87f9fa5d6073de8e7a"
+  },
+  "id": "tkxzLSwurNYoWg4g",
+  "tags": []
+}
