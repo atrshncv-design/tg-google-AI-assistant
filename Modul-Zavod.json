@@ -1,0 +1,1522 @@
+{
+  "name": "МОДУЛЬ УПРАВЛЕНИЯ КОНТЕНТ ЗАВОД",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [-1152, 1296],
+      "id": "6de53fa3-13cb-4dfb-b417-4e0d39404a8b",
+      "name": "Telegram Trigger",
+      "webhookId": "605ee456-4d7c-4d43-91c5-45140bfa9d75",
+      "credentials": {
+        "telegramApi": {
+          "id": "[скрыто]",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [512, 2496],
+      "id": "c369b1a1-1c33-4d04-aa44-2a0448f80415",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.2",
+          "mode": "list",
+          "cachedResultName": "gpt-5.2"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [224, 2480],
+      "id": "86fe3929-0db3-4ff3-82d7-dc69512e3996",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "[скрыто]",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"Название\": \"Кофе натощак убивает желудок\",\n  \"Скрипт\": \"💡 Хук 1. Врачи в шоке от этой привычки\\n Хук 2. Ваш желудок кричит каждое утро\\n Хук 3. Миллионы завтракают неправильно\\n\\n🎬 *Скрипт:*\\nКаждое утро ты медленно убиваешь свой желудок. И даже не подозреваешь.\\n\\nОдна чашка кофе натощак — и твой организм включает режим самоуничтожения. Решение простое: съешь хотя бы банан перед кофе. Желудок скажет спасибо.\\n\\nСохрани, чтобы не забыть завтра утром\",\n  \"Описание\": \"Шокирующая правда о кофе натощак\\nСохрани и позаботься о своем желудке\"\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [704, 2464],
+      "id": "c5d30a16-9246-4e43-b74a-5ef7f5b79479",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "7587ce5b-6b2c-4477-979b-8719b0a35662",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Старт"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6c3fdd66-a733-4e23-8666-2269140afc2f",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/search",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Поиск по запросу"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e8937c14-8c7d-4899-bb11-32bc6bc04bce",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/find",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Найти похожих авторов"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/scrape",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "8508808f-dbdd-4fbc-9765-b94b282b1b48"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Собрать ролики"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "70eaa448-1008-47bf-82b6-180ed9160f42",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "=/script",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Создать скрипты"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e2aa7df1-096e-4c3e-812e-4d6d230a766c",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/avatar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Создать AI Аватар"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "015bafb0-72ac-44cf-8425-f3dca13b2907",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/assistant",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ассистент"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "eb0b32df-caae-4925-ac4c-94b4bfe054da",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/veo3",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "вео3"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "05528f59-6d0f-455c-9c1f-64215f7cab2c",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/yt_script",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Скрипт из YouTube видео"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1ed783c7-9e25-4653-9b0f-b73c57eb6cde",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/regenerate",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Переписать скрипт"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ca393804-dda2-4d1d-9d5c-b197e704aa16",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Наш текст для скрипта"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6eba8478-3277-4a63-bfe4-d679d928239e",
+                    "leftValue": "={{ $json.message.voice }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Голосовое для скрипта"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [-864, 1136],
+      "id": "90d865d8-cb6b-4d3c-b34a-46c46cc2bde0",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [-160, 2352],
+      "id": "3ee406b7-7a82-45a5-bc23-43806ca35891",
+      "name": "Transcribe a recording1",
+      "credentials": {
+        "openAiApi": {
+          "id": "[скрыто]",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [-336, 2352],
+      "id": "1fea0124-b39f-4928-a57c-61cab9c27e62",
+      "name": "Get a file1",
+      "webhookId": "28087ee3-cd5e-4775-bd57-c7ff64206344",
+      "credentials": {
+        "telegramApi": {
+          "id": "[скрыто]",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cfd2ac46-a6a2-4d32-bb02-f5d346ad063f",
+              "name": "message.text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [32, 2352],
+      "id": "8183ba52-7ce5-410e-ba42-6934c12b7e20",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Откройте меню для просмотра команд",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [16, 32],
+      "id": "51942dee-e520-4347-a973-17e2da6dc49a",
+      "name": "Стартовое сообщение",
+      "webhookId": "41bf46ac-406f-463c-a66c-32b79e4a072b",
+      "credentials": {
+        "telegramApi": {
+          "id": "[скрыто]",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [640, 1856],
+      "id": "48f6a32b-f4a9-4377-b487-e17f5bcb1b09",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.2",
+          "mode": "list",
+          "cachedResultName": "gpt-5.2"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [192, 1824],
+      "id": "2401c08e-bf88-4448-94aa-f97e63399838",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "[скрыто]",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"Скрипт\": \"💡Хук 1. Врачи в шоке от этой привычки\\n Хук 2. Ваш желудок кричит каждое утро\\n Хук 3. Миллионы завтракают неправильно\\n\\n🎬 Скрипт:\\nКаждое утро ты медленно убиваешь свой желудок. И даже не подозреваешь.\\n\\nОдна чашка кофе натощак — и твой организм включает режим самоуничтожения.\\n\\nКислота из кофе атакует пустой желудок → начинается воспаление → через месяцы появляется гастрит. Решение простое: съешь хотя бы банан перед кофе. Желудок скажет спасибо.\\n\\nСохрани, чтобы не забыть завтра утром\",\n  \"Описание\": \"Шокирующая правда о кофе натощак\\nСохрани и позаботься о своем желудке\"\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [784, 1776],
+      "id": "24a649ac-b178-4f47-a0de-8132b6f12fbb",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1eNPg9bhl3fLL-WIioNJYrIPI_Tn9GRz-zvJQCZyrb4k",
+          "mode": "list",
+          "cachedResultName": " КОНТЕНТ ЗАВОД Рабочий",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eNPg9bhl3fLL-WIioNJYrIPI_Tn9GRz-zvJQCZyrb4k/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 923856445,
+          "mode": "list",
+          "cachedResultName": "Скрипты",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eNPg9bhl3fLL-WIioNJYrIPI_Tn9GRz-zvJQCZyrb4k/edit#gid=923856445"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Статус",
+              "lookupValue": "Переписать"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [208, 1584],
+      "id": "5d40ac09-b94f-411a-b23f-a5e23da7d5a7",
+      "name": "Получить скрипты со статусом Переписать",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "[скрыто]",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1eNPg9bhl3fLL-WIioNJYrIPI_Tn9GRz-zvJQCZyrb4k",
+          "mode": "list",
+          "cachedResultName": " КОНТЕНТ ЗАВОД Рабочий",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eNPg9bhl3fLL-WIioNJYrIPI_Tn9GRz-zvJQCZyrb4k/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 923856445,
+          "mode": "list",
+          "cachedResultName": "Скрипты",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eNPg9bhl3fLL-WIioNJYrIPI_Tn9GRz-zvJQCZyrb4k/edit#gid=923856445"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Дата": "={{ $now.format('yyyy-MM-dd') }}",
+            "Скрипт": "={{ $json.output['Скрипт'] }}",
+            "Описание": "={{ $json.output['Описание'] }}",
+            "Статус": "Переписан",
+            "ID поста": "={{ $('Получить скрипты со статусом Переписать').item.json['ID поста'] }}"
+          },
+          "matchingColumns": [
+            "ID поста"
+          ],
+          "schema": [
+            {
+              "id": "Дата",
+              "displayName": "Дата",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Источник",
+              "displayName": "Источник",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Название",
+              "displayName": "Название",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Скрипт",
+              "displayName": "Скрипт",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Описание",
+              "displayName": "Описание",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Статус",
+              "displayName": "Статус",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Исходный скрипт",
+              "displayName": "Исходный скрипт",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Ссылка на исходное видео",
+              "displayName": "Ссылка на исходное видео",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ID поста",
+              "displayName": "ID поста",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [736, 1584],
+      "id": "7d8d0a0e-0a27-4c5b-8a98-3f4b7f5d6d7e",
+      "name": "Обновить скрипты в таблице",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "[скрыто]",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1eNPg9bhl3fLL-WIioNJYrIPI_Tn9GRz-zvJQCZyrb4k",
+          "mode": "list",
+          "cachedResultName": " КОНТЕНТ ЗАВОД Рабочий",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eNPg9bhl3fLL-WIioNJYrIPI_Tn9GRz-zvJQCZyrb4k/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 923856445,
+          "mode": "list",
+          "cachedResultName": "Скрипты",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eNPg9bhl3fLL-WIioNJYrIPI_Tn9GRz-zvJQCZyrb4k/edit#gid=923856445"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Дата": "={{ $now.format('yyyy-MM-dd') }}",
+            "Название": "={{ $json.output['Название'] }}",
+            "Скрипт": "={{ $json.output['Скрипт'] }}",
+            "Описание": "={{ $json.output['Описание'] }}",
+            "Статус": "Новый"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Дата",
+              "displayName": "Дата",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Источник",
+              "displayName": "Источник",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Название",
+              "displayName": "Название",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Скрипт",
+              "displayName": "Скрипт",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Описание",
+              "displayName": "Описание",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Статус",
+              "displayName": "Статус",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Исходный скрипт",
+              "displayName": "Исходный скрипт",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Ссылка на исходное видео",
+              "displayName": "Ссылка на исходное видео",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ID поста",
+              "displayName": "ID поста",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [784, 2240],
+      "id": "d3b1e2f4-4a2b-4d5e-9f3a-6b7c8d9e0f1g",
+      "name": "Записать скрипты в таблицу",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "[скрыто]",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output['Скрипт'] }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1040, 2240],
+      "id": "2h3i4j5k-6l7m-8n9o-0p1q-2r3s4t5u6v7w",
+      "name": "Отправить в Телеграм",
+      "webhookId": "8x9y0z1a-2b3c-4d5e-6f7g-8h9i0j1k2l3m",
+      "credentials": {
+        "telegramApi": {
+          "id": "[скрыто]",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output['Скрипт'] }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1040, 1584],
+      "id": "1cb9299d-6f73-4a7f-a443-226767833d76",
+      "name": "Отправить в Телеграм1",
+      "webhookId": "6a00eddd-9902-4ae6-b97f-edc7657ebfce",
+      "credentials": {
+        "telegramApi": {
+          "id": "[скрыто]",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Переписать скрипты",
+        "height": 512,
+        "width": 1296,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [-80, 1472],
+      "typeVersion": 1,
+      "id": "f5718fef-71a6-4049-b0bf-1c5efc7d73a2",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Создать готовые скрипты из идеи: текстом или голосом",
+        "height": 784,
+        "width": 1568,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [-368, 2032],
+      "typeVersion": 1,
+      "id": "9c3a24d8-cb7f-4056-946b-ba56e7be5c2d",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=🆕 Переписываю скрипты...⏳ ",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [-16, 1584],
+      "id": "3156f729-d550-4cb9-9b26-321a79502822",
+      "name": "Уведомление о запуске",
+      "webhookId": "3ae0c892-d449-4cd0-81f4-a331b9e22a38",
+      "credentials": {
+        "telegramApi": {
+          "id": "[скрыто]",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Команды для Telegram бота\n\nSearch - 🔎Найти видео (YouTube, TikTok)\n\nScrape - 🌟Собрать ролики автора (YouTube, Instagram, TikTok)\n\nScript - 📝Создать скрипт из коротких роликов\n\nFind - 🕵️‍♂️Найти похожие аккаунты (Instagram)\n\nYt_script - 📕Создать скрипты из Youtube видео по ссылке\n\nAvatar - 🤖Создать ролик с AI-аватаром\n\nRegenerate - 🔁Переписать скрипты\n\nStart - ℹ️Инструкция по Контент Заводу 2.0\n\n\n",
+        "height": 400,
+        "width": 480
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [-1408, 288],
+      "typeVersion": 1,
+      "id": "0006f5b8-e2a8-4720-8f12-dfed59ac0bfa",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json['Скрипт'] }}",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=# Роль\nТоп-маркетолог, специализирующийся на переработке вирусных Reels. Твоя задача — взять существующий скрипт и создать его НОВУЮ ВЕРСИЮ с другим углом подачи. Стиль: живая речь, как будто говоришь в камеру — короткие фразы, ритм, паузы. Без воды, канцелярита и клише.\n\n# Анализ исходного скрипта\nПроанализируй переданный скрипт и определи:\n- Основную тему и смысл\n- Целевую аудиторию  \n- Проблему/потребность, которую он закрывает\n- Эмоциональный триггер (боль/страх/любопытство/желание)\n\n# Задача переработки\nСоздай НОВУЮ ВЕРСИЮ ролика 30-60 сек (90-140 слов) с:\n- **ДРУГИМ углом подачи** (противоположная точка зрения, новая рамка, другой контекст)\n- **НОВЫМ хуком** (принципиально отличающимся от исходного)\n- **ДРУГОЙ структурой повествования** (другая последовательность аргументов)\n- **СОХРАНЕНИЕМ основного смысла и пользы**\n\n# Варианты переработки (выбери один подход):\n1. **Контр-ракурс:** \"Все говорят X, а на самом деле Y\"\n2. **Временная рамка:** \"Раньше было так → теперь по-другому\"  \n3. **Персонализация:** \"Для кого-то это работает, для кого-то нет\"\n4. **Ошибка-истина:** \"Главная ошибка в том, что...\"\n5. **Секрет-откровение:** \"То, о чем молчат эксперты\"\n6. **Причина-следствие:** переверни логическую цепочку\n\n# Структура НОВОГО скрипта\n- **HOOK:** Новый эмоциональный удар — ОБЯЗАТЕЛЬНО отличается от исходного. НЕ используй \"А вы знали\", \"Расскажу\", \"Многие не знают\"\n- **SUBHEAD:** усиление новой интриги + обещание пользы  \n- **MAIN PART:** новая проблема/ракурс → почему так → решение/рамка → пример/доказательство → выгода\n- **CTA:** свежий, неклишированный призыв (отличный от исходного)\n\n# Обязательный формат вывода\n\n```json\n{\n  \"Скрипт\": \"💡 Хук 1: [вариант 1]\\nХук 2: [вариант 2]\\nХук 3: [вариант 3]\\n\\n🎬 Скрипт:\\n\\n[усиление интриги и обещание пользы]\\n\\n[основной контент: проблема → почему → решение → пример → выгода]\\n\\n[легкий призыв к действию]\",\n  \"Описание\": \"[строка 1: новый эмоциональный крючок или вызов]\\n[строка 2: мини-действие — сохранить/поделиться/задуматься]\"\n}\n```\n\n# Критерии качества переработки\n- Новый HOOK кардинально отличается от исходного и останавливает скролл\n- Угол подачи действительно ДРУГОЙ, а не просто переформулированный  \n- Сохранен основной смысл и польза для аудитории\n- Описание свежее и цепляющее\n- Всё звучит естественно при проговаривании вслух\n- JSON синтаксически корректен\n- Если не пришел исходный скрипт, откажись от выполнения и сообщи об этом\n\n# Запрет на повторы\nНЕ копируй структуру, фразы или подходы из исходного скрипта. Цель — создать СВЕЖИЙ взгляд на ту же тему."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [416, 1584],
+      "id": "0195a87a-dd68-48d7-95da-065677b535ee",
+      "name": "Усилитель скриптов Reels"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=# Роль\nТоп-маркетолог, создающий вирусные Reels. Стиль: живая речь, как будто говоришь в камеру — короткие фразы, ритм, паузы. Без воды, канцелярита и клише.\n\n# Работа с идеей\nНа основе полученной идеи определи и разработай:\n- Главную мысль/проблему для аудитории\n- Контраст \"как есть → как должно быть\"  \n- Эмоциональный триггер (боль/страх/любопытство/желание)\n\n# Задача\nСоздай ролик 30-60 сек (90-140 слов) в JSON формате.\n\n# Структура скрипта\n- **HOOK (0-3с):** ОБЯЗАН бить по эмоции — шок/возмущение/интрига/срочность. НЕ используй \"А вы знали\", \"Расскажу\", \"Многие не знают\"\n- **SUBHEAD (3-8с):** усиление интриги + обещание пользы  \n- **MAIN PART (8-45с):** основная суть ролика\n- **CTA (45-60с):** легкий, неклишированный призыв (сохранить/поделиться/вопрос)\n\n# Обязательный формат вывода\n\n```json\n{\n  \"Название\": \"3-6 слов о теме ролика\",\n  \"Скрипт\": \"💡 Хук 1. [вариант 1]\\n Хук 2. [вариант 2]\\n Хук 3. [вариант 3]\\n\\n🎬 *Скрипт:*\\n\\n[усиление интриги и обещание пользы]\\n\\n[основной контент]\\n\\n[легкий призыв к действию]\",\n  \"Описание\": \"[строка 1: эмоциональный крючок или вызов]\\n[строка 2: мини-действие — сохранить/поделиться/задуматься]\"\n}\n```\n\n# Критерий качества\n- Если HOOK не останавливает скролл — перепиши\n- Если описание банально — перепиши  \n- Всё должно звучать естественно при проговаривании вслух\n- JSON синтаксически корректен\n- Если не пришел текст от пользователя, откажись от выполнения и сообщи об этом"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [272, 2160],
+      "id": "5f51e89c-f0dd-4bfe-949c-e05725941d8d",
+      "name": "Сценарист Reels"
+    },
+    {
+      "parameters": {
+        "content": "## После подключения учетной записи Google в n8n включите Google Gemini Chat Model в агентах \"Сценарист Reels\" и \"Усилитель скриптов Reels\"",
+        "height": 224,
+        "width": 624
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [304, 2832],
+      "typeVersion": 1,
+      "id": "b5d6c92e-48a2-4198-968b-0eb2d706d17f",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "[скрыто]",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/[скрыто]",
+          "cachedResultName": "СБОР РОЛИКОВ АВТОРОВ"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [0, 608],
+      "id": "24fb13fe-31c1-45f3-aaa6-f9df54449dc0",
+      "name": "Сбор роликов автора"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "[скрыто]",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/[скрыто]",
+          "cachedResultName": "Поиск контента по запросу"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [0, 208],
+      "id": "5da80e68-ea8b-4a75-9d87-3b0e9ec52e5a",
+      "name": "Поиск контента по запросу"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "[скрыто]",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/[скрыто]",
+          "cachedResultName": "Создание готовых скриптов"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [0, 816],
+      "id": "4489c98d-5499-420b-ae07-30df404f595b",
+      "name": "Создание скриптов из роликов"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "[скрыто]",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/[скрыто]",
+          "cachedResultName": "Avatar IV → Telegram + Drive (auto)"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [0, 1056],
+      "id": "a907756e-8124-46f9-8e0e-e6232cea2e23",
+      "name": "Создание AI Аватар"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "[скрыто]",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/[скрыто]",
+          "cachedResultName": "Создание скриптов из Youtube видео по ссылке"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [96, 1296],
+      "id": "b632a8e3-fb96-40f5-b487-bb2d4e4a81d8",
+      "name": "Создание скриптов из Youtube видео по ссылке1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "[скрыто]",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/[скрыто]",
+          "cachedResultName": "Поиск похожих аккаунтов Instagram"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [0, 400],
+      "id": "8ee171a7-ec1e-4051-85d8-45208377c197",
+      "name": "Поиск похожих аккаунты Instagram"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [448, 1856],
+      "id": "5cdcb529-f9be-4165-bdbc-bd327f0301c1",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "[скрыто]",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [368, 2624],
+      "id": "bb127b3d-b21b-4eb9-864d-5a688b46ae01",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "[скрыто]",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "[скрыто]",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/[скрыто]",
+          "cachedResultName": "VEO3 тесты"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [-1504, 1744],
+      "id": "1cae7f31-c92a-46ee-a325-b47768a5d71b",
+      "name": "вео3"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.2",
+          "mode": "list",
+          "cachedResultName": "gpt-5.2"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [784, 2704],
+      "id": "81623284-1df1-4cc0-81d9-446f0a0dc9e4",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "[скрыто]",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.2",
+          "mode": "list",
+          "cachedResultName": "gpt-5.2"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [1088, 1904],
+      "id": "0c821399-5176-4847-8ae0-8e92f2f81b96",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "[скрыто]",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Сценарист Reels",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Сценарист Reels",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Сценарист Reels",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Стартовое сообщение",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Поиск контента по запросу",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Поиск похожих аккаунты Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Сбор роликов автора",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Создание скриптов из роликов",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Создание AI Аватар",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [
+          {
+            "node": "вео3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Создание скриптов из Youtube видео по ссылке1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Уведомление о запуске",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Сценарист Reels",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file1": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Сценарист Reels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "Усилитель скриптов Reels",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Усилитель скриптов Reels",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Усилитель скриптов Reels",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Получить скрипты со статусом Переписать": {
+      "main": [
+        [
+          {
+            "node": "Усилитель скриптов Reels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Обновить скрипты в таблице": {
+      "main": [
+        [
+          {
+            "node": "Отправить в Телеграм1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Записать скрипты в таблицу": {
+      "main": [
+        [
+          {
+            "node": "Отправить в Телеграм",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Уведомление о запуске": {
+      "main": [
+        [
+          {
+            "node": "Получить скрипты со статусом Переписать",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Усилитель скриптов Reels": {
+      "main": [
+        [
+          {
+            "node": "Обновить скрипты в таблице",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Сценарист Reels": {
+      "main": [
+        [
+          {
+            "node": "Записать скрипты в таблицу",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Усилитель скриптов Reels",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Сценарист Reels",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "[скрыто]"
+  },
+  "versionId": "[скрыто]",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "[скрыто]"
+  },
+  "id": "[скрыто]",
+  "tags": []
+}
